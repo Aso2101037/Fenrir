@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="ja">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+
+<body>
+    <h1>レストラン検索</h1>
+    <div class="top">
+        <form>
+            <label for="ranges">検索半径</label>
+            <select id="ranges">
+                <option value="1">300m</option>
+                <option value="2">500m</option>
+                <option value="3">1km </option>
+                <option value="4">2km </option>
+                <option value="5">3km </option>
+            </select>
+        </form>
+        <button value="1" data-page="1">現在地取得</button><br />
+    </div>
+    <p class="status"></p>
+    <a class="map-link" target="_blank" rel="noopener"></a>
+    <h2></h2>
+    <p class="page"></p>
+    <span></span>
+    <div class="next"></div>
+    <div class="main"></div>
+    <template id="template">
+        <ul>
+            <li class="name"><a class="shop"></a></li>
+            <li class="access"><a class="map"></a></li>
+            <li class="average"></li>
+            <li class="open"></li>
+        </ul>
+    </template>
+
+    <script>
+        document.querySelector("button").addEventListener("click", getPosition);
+
+            // 位置情報を取得する関数
+            function getPosition(event) {
+            const status = document.querySelector(".status");
+            const mapLink = document.querySelector(".map-link");
+            const p = document.querySelector(".page");
+            const ranges = document.getElementById("ranges");
+            const range = ranges.value;
+            const start = event.target.value;
+            const page = event.target.dataset.page;
+            mapLink.href = "";
+            mapLink.textContent = "";
+
+            // ブラウザがGeolocation APIに対応しているかをチェック
+            if (!navigator.geolocation) {
+                status.textContent = "ブラウザがGeolocationに対応していません";
+                // 位置情報取得成功時にsuccess()、そして取得失敗時にerror()を呼び出す
+                // optionsはgetCurrentPosition()に渡す設定値
+            } else {
+                status.textContent = "読み込み中……";
+                navigator.geolocation.getCurrentPosition(success, error);
+            }
+            // 引数として、coords(coordinates。緯度・経度など)とtimestamp(タイムスタンプ)の2つを持ったpositionが渡される
+            async function success(position) {
+                status.textContent = "";
+                const latitude = position.coords.latitude;
+                const longitude = position.coords.longitude;
+                mapLink.href = `https://maps.google.co.jp/maps?q=${latitude},${longitude}`;
+                mapLink.textContent = "Googlemapで現在地を確認する";
+                p.textContent = `${page}ページ目を表示しています。`;
+
+                const postData = new FormData();
+                postData.set("latitude", latitude);
+                postData.set("longitude", longitude);
+                postData.set("range", range);
+                postData.set("start", start);
+
+                const data = {
+                    method: "POST",
+                    body: postData
+                };
+
+                try {
+                    const res = await fetch("main.php", data);
+                    if (!res.ok) {
+                        throw new Error("Network response was not ok.");
+                    }
+                    const json = await res.json();
+                    renderJson(json);
+                } catch (error) {
+                    status.textContent = "エラーが発生しました：" + error.message;
+                }
+            }
+
+            // 位置情報取得処理が失敗した時の関数
+            function error(positionError) {
+                switch (positionError.code) {
+                case 0: // 0:UNKNOWN_ERROR
+                    status.textContent = "原因不明のエラーが発生しました。";
+                    break;
+                    
+                case 1: // 1:PERMISSION_DENIED
+                    status.textContent = "	位置情報の取得が許可されませんでした。";
+                    break;
+
+                case 2: // 2:POSITION_UNAVAILABLE
+                    status.textContent = "電波状況などで位置情報が取得できませんでした。";
+                    break;
+
+                case 3: // 3:TIMEOUT
+                    status.textContent =
+                    "位置情報の取得に時間がかかり過ぎてタイムアウトしました。";
+                    break;
+                }
+            }
+            }
+            // グルメサーチAPIから取得したjsonの内容をjavascriptでhtmlに反映させる関数
+            function renderJson(json) {
+            document.querySelector(".main").innerHTML = "";
+            document.querySelector("span").innerHTML = "";
+            document.querySelector(
+                "h2"
+            ).textContent = `${json.results.results_available}件見つかりました。距離の近い順に表示しています。`;
+            const fragment = document.createDocumentFragment();
+            const template = document.getElementById("template");
+            for (let i = 0; i < json.results.shop.length; i++) {
+                const clone = template.content.cloneNode(true);
+
+                clone.querySelector(
+                ".name a"
+                ).textContent = `店名：${json.results.shop[i].name}`;
+                clone.querySelector(".name a").href = json.results.shop[i].urls.pc;
+                clone.querySelector(
+                ".access a"
+                ).textContent = `住所：${json.results.shop[i].address}`;
+                clone.querySelector(".access a").href = json.results.shop[i].coupon_urls.pc;
+                clone.querySelector(
+                ".average"
+                ).textContent = `予算：${json.results.shop[i].budget.average}`;
+                clone.querySelector(
+                ".open"
+                ).textContent = `営業時間：${json.results.shop[i].open}`;
+
+                fragment.appendChild(clone);
+            }
+            document.querySelector(".main").appendChild(fragment);
+
+            // お店が10件以上見つかったらページネーションをする
+            if (json.results.results_available > 10) {
+                const i = Math.floor(json.results.results_available / 10) + 1;
+                for (let j = 0; j < i; j++) {
+                const span = document.createElement("a");
+                span.textContent = j + 1;
+                span.dataset.page = j + 1;
+                span.value = 10 * j + 1;
+                span.addEventListener("click", getPosition);
+                fragment.appendChild(span);
+                }
+                document.querySelector("span").appendChild(fragment);
+            }
+            }
+
+    </script>
+</body>
+
+</html>
