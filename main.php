@@ -1,15 +1,13 @@
 <?php
-$url = 'https://webservice.recruit.co.jp/hotpepper/gourmet/v1/?';
-$url .= http_build_query($query);
-$response = file_get_contents($url);
-$json = json_encode($response);
-
-echo ($json);
+// echo ($json);
 // javascriptから送られてきたクエリを変数に代入
-$latitude =  $_POST['latitude']; 
-$longitude = $_POST['longitude'];
-$range = $_POST['range'];
-$start = $_POST['start'];
+if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+    $latitude =  $_POST['latitude']; 
+    $longitude = $_POST['longitude'];
+    $range = $_POST['range'];
+    $start = $_POST['start'];
+}
+
 // クエリをまとめる
 $query = [
     'key' => '4bd6b41c133d5139', // <-- ここにあなたのAPIキーを設定してください。
@@ -19,11 +17,15 @@ $query = [
     'start' => $start, // 検索の開始位置
     'format' => 'json', // レスポンス形式
 ];
+$url = 'https://webservice.recruit.co.jp/hotpepper/gourmet/v1/?';
+$url .= http_build_query($query);
+$response = file_get_contents($url);
+$json = json_encode($response);
+
 // グルメサーチAPIからjsonを取得
 $response = file_get_contents($url);
 $json = json_encode($response);
 
-echo ($json);
 $url = 'https://webservice.recruit.co.jp/hotpepper/gourmet/v1/?';
 $url .= http_build_query($query);
 $response = file_get_contents($url);

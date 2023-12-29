@@ -11,7 +11,7 @@ h1 {
       font-size: 30px;
       display: flex;
       justify-content: center; 
-      align-items: center; 
+      text-align: center;
   }
   select {
     text-align: center;
@@ -68,6 +68,7 @@ h1 {
     color: black;
     font-weight: bold;
     transition: color 0.3s;
+    text-align: center;
   }
   a:hover {
     color: #ff7043;
@@ -90,12 +91,21 @@ h1 {
     background-color: blueviolet;
   }
   h2 {
-    color: #158b2b;
+    color: #ea4747;
     font-size: 20px;
     padding: 10px 0;
     margin: 0;
+    text-align: center;
   }
   .page {
     margin: 0;
   }
+  body {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100vh;
+    margin: 0;
+}
   

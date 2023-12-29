@@ -12,7 +12,7 @@
     <h1>レストラン検索アプリ</h1>
     <div class="top">
         <form>
-            <label for="ranges">検索範囲</label>
+            <label for="ranges">検索半径</label>
             <select id="ranges">
                 <option value="1">300m</option>
                 <option value="2">500m</option>
@@ -33,9 +33,10 @@
     <template id="template">
         <ul>
             <li class="name"><a class="shop"></a></li>
-            <li class="access"><a class="map"></a></li>
-            <li class="average"></li>
-            <li class="open"></li>
+            <li class="address"><a class="map"></a></li>
+            <li class="access"></li>
+            <!-- <li class="average"></li> -->
+            <li class="photo img"><img src=""></li>
         </ul>
     </template>
 
