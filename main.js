@@ -118,7 +118,7 @@ function getPosition(event) {
     // 緯度・経度を地図上で確認するためにGoogleMapへのリンクを作成
     mapLink.href = `https://maps.google.co.jp/maps?q= ${latitude} , ${longitude}`;
     mapLink.textContent = `緯度:${latitude}  経度:${longitude}  googlemapで現在地を確認する`;
-    p.textContent = `${page}ページ目を表示しています。`;
+    p.textContent = `${page}ページ目を表示しています`;
 
     // クエリをFormDataに格納する
     const postData = new FormData(); // フォーム方式で送る場合
