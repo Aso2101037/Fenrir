@@ -10,7 +10,7 @@
 
 公開したアプリのURL：
 
-該当プロジェクトのリポジトリURL：https://github.com/Aso2101037/Fenrir
+該当プロジェクトのリポジトリURL：https://github.com/Aso2101037/Fenrir.git
 
 開発環境	：Visual Studio Code 1.85.1
 
